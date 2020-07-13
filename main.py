@@ -20,9 +20,13 @@ acc_path = "./result/acc/"
 N = 32
 
 # number of train data (square lattice)
-count1 = 10000
+count1 = 1000
 # number of test data (triangle lattice)
-count2 = 1000
+count2 = 100
+
+# temperature list
+T1_list = np.linspace(1.0, 3.5, count1).round(3)
+T2_list = np.linspace(2.0, 5.5, count2).round(3)
 
 def acc_plot(T, pred, LatticeType, T_crit):
     # initialize matplotlib.pyplot
@@ -39,11 +43,11 @@ def acc_plot(T, pred, LatticeType, T_crit):
     plt.show()
 
 # call module that create spin map and learn data
-#CSM = CreateSpinMap.CSM(count1, count2, N, npy_path, spin_map_path)
-#CSM.createdata()
+CSM = CreateSpinMap.CSM(N, T1_list, T2_list, npy_path, spin_map_path)
+CSM.createdata()
 
-#LPTT = LearnPhaseTransTemp.LPTT(N, npy_path, model_path, learning_rate=1e-3, l2_const=1e-4, verbose=1, epochs=100, batch_size=36)
-#LPTT.learndata()
+LPTT = LearnPhaseTransTemp.LPTT(N, npy_path, model_path, learning_rate=1e-3, l2_const=1e-4, verbose=1, epochs=100, batch_size=36)
+LPTT.learndata()
 
 # load train and test data
 X_train = np.load(npy_path+"x_train.npy")
@@ -57,15 +61,14 @@ Y_test = np.load(npy_path+"y_test.npy")
 model = keras.models.load_model(model_path)
 print(model.evaluate(X_test, Y_test)[1], "%")
 
-T1_list = np.linspace(0.1, 5.5, count1).round(3)
-T2_list = np.linspace(2.0, 7.5, count2).round(3)
 # text result
 pred = model.predict(X_test)
 pred = pred.reshape(count2)
 print((pred*100).astype(int))
-acc_plot(T2_list, pred*100, "triangular", 3.64)
+acc_plot(T2_list, (pred*100).astype(int), "triangular", 3.64)
 
 # train result
 pred = model.predict(X_train)
 pred = pred.reshape(count1)
-acc_plot(T1_list, pred*100, "square", 2.27)
+print((pred*100).astype(int))
+acc_plot(T1_list, (pred*100).astype(int), "square", 2.27)

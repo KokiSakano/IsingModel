@@ -37,7 +37,7 @@ class GSSS:
     def calc_each_temperature(self):
         # save spin state
         X = []
-        T_crit = 2.64
+        T_crit = 2.27
         for t in tqdm(self.T):
             # init spin state
             self.state = 2 * np.random.randint(0, 2, (self.N, self.N)) - 1
